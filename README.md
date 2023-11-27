@@ -17,14 +17,15 @@ Run the code:
 
 python main.py
 
-Overview
+                                     Overview
 main.py: The main Python script orchestrating the Rust integration, async IO, and multiprocessing.
 rust_module: Rust code for heavy computation, compiled as a shared library.
 RustPythonIntegration: A Python class encapsulating the integration logic.
 Requirements
 Python 3.x
 Rust (for compiling the Rust module)
-Usage
+
+                                       Usage
 Modify the Rust code in rust_module to suit your specific heavy computation requirements.
 Adjust the Python code in main.py and RustPythonIntegration as needed.
 
