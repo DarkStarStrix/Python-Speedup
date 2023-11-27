@@ -25,7 +25,8 @@ Requirements
 Python 3.x
 Rust (for compiling the Rust module)
 Usage
-Modify the Rust code in rust_module to suit your specific heavy computation requirements. Adjust the Python code in main.py and RustPythonIntegration as needed.
+Modify the Rust code in rust_module to suit your specific heavy computation requirements.
+Adjust the Python code in main.py and RustPythonIntegration as needed.
 
 Contributing
 Feel free to contribute by opening issues or submitting pull requests.
