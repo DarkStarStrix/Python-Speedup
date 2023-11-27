@@ -1,0 +1,61 @@
+import numpy as np
+import asyncio
+import time
+import matplotlib.pyplot as plt
+import multiprocessing
+
+from concurrent.futures import ProcessPoolExecutor
+from rust_python_integration import rust_computation_wrapper
+
+# This class provides an interface for performing heavy computations on large datasets using Rust, Python, AsyncIO, and Multiprocessing.
+class RustPythonIntegration:
+    # The constructor initializes an event loop for asynchronous tasks.
+    def __init__(self):
+        self.loop = asyncio.get_event_loop ()
+
+    # This method takes a list of data and divides it into chunks.
+    # It creates a task for each chunk to perform a heavy computation asynchronously.
+    # It waits for all tasks to complete and collects the results from the queue.
+    # It then plots the results against the original data.
+    # @param data: A list of data to be processed.
+    async def main_async(self, data):
+        chunk_size = 1000  # Fixed chunk size
+        chunks = [data[i:i + chunk_size] for i in range(0, len(data), chunk_size)]
+
+        result_queue = asyncio.Queue()
+        tasks = [self.loop.run_in_executor(None, self.process_chunk, chunk, result_queue) for chunk in chunks]
+        await asyncio.gather(*tasks)
+
+        results = np.array([])  # Using a NumPy array for results
+        while not result_queue.empty():
+            results = np.append(results, result_queue.get_nowait())
+
+        plt.plot(data, results, label='Processed Data')
+        plt.xlabel('Input Data')
+        plt.ylabel('Computed Result')
+        plt.title('Rust Integration with Python, AsyncIO, and Multiprocessing')
+        plt.legend()
+        plt.show()
+
+    # This method takes a chunk of data and a queue for results.
+    # It performs a heavy computation task on the chunk and puts the result in the queue.
+    # @param chunk: A list of data to be processed.
+    # @param result_queue: A queue for storing the results.
+    @staticmethod
+    def process_chunk(chunk, result_queue):
+        with ProcessPoolExecutor() as executor:
+            results = executor.map(rust_computation_wrapper, chunk)
+        result_queue.put(list(results))
+
+
+# This is the main entry point of the program.
+# It creates an instance of the RustPythonIntegration class and runs the main_async method on a range of numbers.
+# It then prints the execution time.
+if __name__ == "__main__":
+    start_time = time.time()
+
+    rust_python_integration = RustPythonIntegration()
+    data = np.arrange(10_000)
+    asyncio.run(rust_python_integration.main_async(data))
+
+    print(f"Execution time: {time.time() - start_time} seconds")
